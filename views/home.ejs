@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="csrf-token" content="<%= csrfToken %>">
+  <link rel="stylesheet" href="/home/style.css">
+  <script src="/utils/util.js" defer></script>
+  <script src="/home/script.js" defer></script>
+  <title>My Vocaby</title>
+</head>
+<body>
+  <header>
+    <nav>
+      <h2 id="logo">My Vocaby</h2>
+      <div id="quiz"><a href="/quiz" id="quizBtn">Quiz</a></div>
+      <form id="logout" action="/logout" method="post">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button id="logoutBtn" type="submit">Logout</button>
+      </form>
+    </nav>
+  </header>
+  <div class="container">
+    <div class="card addBtn" id="addCard">
+      <div id="add"></div>
+    </div>
+    <% wordList.forEach((item) => { %> 
+        <div class="card" data-cardid=<%= item.word._id %>>
+          <div class="delete"></div>
+          <div class="vocab" id="word"><strong><%= item.word.word %></strong><span id="type"><%= item.word.type %></span></div>
+          <div class="vocab" id="definition"><%= item.word.definition %></div>
+          <div class="vocab" id="example"><%= item.word.example %></div>
+        </div>
+    <% }) %>
+  </div>
+  <div class="background">
+    <div class="search-container">
+      <div class="adding-card">
+        <div class="close-container">
+          <div id="close">X</div>
+        </div>
+        <div class="search-field">
+          <input type="text" placeholder="Word" name="search" id="search">
+          <button id="searchBtn">Search</button>
+          <div id="searchLoading">Loading...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
