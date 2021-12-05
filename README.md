@@ -6,7 +6,7 @@ A flash card web application. The aim of the application is making easy to searc
 
 # How to run
 
-You should install nodeJS and provide credentials with by __*.env*__ file.
+You should install nodeJS and provide credentials via __*.env*__ file.
 
 `credentials(.env)`
 
