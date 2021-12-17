@@ -1,4 +1,4 @@
-const { validationResult } = require('express-validator');
+const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 
 const User = require("../models/user");
@@ -6,31 +6,30 @@ const User = require("../models/user");
 exports.getLogin = (req, res) => {
   return res.render("login", {
     error: false,
-    username: false
+    username: false,
   });
-}
+};
 
 exports.getSignup = (req, res) => {
   res.render("signup", {
     error: false,
-    username: false
+    username: false,
   });
-}
-
+};
 
 exports.postLogin = async (req, res, next) => {
   const validation = validationResult(req);
-  
+
   const username = req.body.username;
   const password = req.body.password;
 
   if (!validation.isEmpty()) {
     return res.render("login", {
       error: validation.errors[0],
-      username: username
+      username: username,
     });
   }
-  
+
   let user;
   try {
     user = await User.findOne({ username: username });
@@ -39,13 +38,13 @@ exports.postLogin = async (req, res, next) => {
     err.msg = "Something went wrong";
     return next(err);
   }
-  
+
   if (!user) {
     return res.render("login", {
       error: {
-        msg: "Invalid username or password!"
+        msg: "Invalid username or password!",
       },
-      username: username
+      username: username,
     });
   }
 
@@ -61,20 +60,19 @@ exports.postLogin = async (req, res, next) => {
   if (!isPasswordsMatch) {
     return res.render("login", {
       error: {
-        msg: "Wrong password!"
+        msg: "Wrong password!",
       },
-      username: username
+      username: username,
     });
   }
 
   req.session.isLoggedIn = true;
   req.session.user = user;
-  req.session.save(err => {
+  req.session.save((err) => {
     if (err) return next(err);
     res.redirect("/home");
   });
-}
-
+};
 
 exports.postSignup = async (req, res, next) => {
   const validation = validationResult(req);
@@ -85,8 +83,22 @@ exports.postSignup = async (req, res, next) => {
   if (!validation.isEmpty()) {
     return res.render("signup", {
       error: validation.errors[0],
-      username: username
+      username: username,
     });
+  }
+
+  try {
+    const isUserExist = await User.findOne({ username: username });
+    if (isUserExist) {
+      const error = new Error();
+      error.httpStatusCode = 401;
+      error.msg = "Invalid username!";
+      return next(error);
+    }
+  } catch (err) {
+    err.httpStatusCode = 500;
+    err.msg = "Something went wrong";
+    return next(err);
   }
 
   let hashedPassword;
@@ -100,7 +112,7 @@ exports.postSignup = async (req, res, next) => {
 
   const user = new User({
     username,
-    password: hashedPassword
+    password: hashedPassword,
   });
 
   try {
@@ -113,18 +125,17 @@ exports.postSignup = async (req, res, next) => {
 
   req.session.isLoggedIn = true;
   req.session.user = user;
-  req.session.save(err => {
+  req.session.save((err) => {
     if (err) return next(err);
     res.redirect("/home");
   });
-}
-
+};
 
 exports.postLogout = (req, res, next) => {
-  req.session.destroy(err => {
+  req.session.destroy((err) => {
     if (err) {
-      return next(err)
+      return next(err);
     }
     res.redirect("/login");
-  })
-}
+  });
+};
